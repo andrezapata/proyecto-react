@@ -1,62 +1,103 @@
+import { useState } from "react";
+
 const AlumnoCard = ({
   nombre,
   carrera,
-  estado,
+  estadoInicial,
   onEliminar,
   onEditar
 }) => {
 
+  const [estado, setEstado] = useState(estadoInicial);
+
   const badgeColor =
     estado === "Matriculado"
       ? "bg-success"
-      : "bg-secondary"
+      : "bg-secondary";
+
+  const cambiarEstado = () => {
+    if (estado === "Matriculado") {
+      setEstado("Inactivo");
+    } else {
+      setEstado("Matriculado");
+    }
+  };
 
   return (
+    <div className="col-md-4 mb-4">
 
-    <div className="col-md-3 mb-4">
+      <div
+        className="card border-0 shadow-lg rounded-4 overflow-hidden h-100"
+        style={{
+          transition: "0.3s",
+          cursor: "pointer"
+        }}
+      >
 
-      <div className="card shadow border-0 rounded-4 h-100">
+        {/* Imagen */}
+        <div className="text-center pt-4">
 
-        <div className="card-body">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="Alumno"
+            width="100"
+            height="100"
+            className="rounded-circle border border-3 border-primary shadow"
+          />
 
-          <h5 className="text-primary fw-bold">
+        </div>
+
+        {/* Body */}
+        <div className="card-body text-center">
+
+          <h4 className="fw-bold text-primary mb-1">
             {nombre}
-          </h5>
+          </h4>
 
-          <p className="text-muted">
+          <p className="text-muted mb-3">
             {carrera}
           </p>
 
-          <div className="d-flex justify-content-between align-items-center">
+          {/* Estado */}
+          <span
+            className={`badge ${badgeColor} px-4 py-2 rounded-pill mb-4`}
+          >
+            {estado}
+          </span>
 
-            <span className={`badge ${badgeColor} px-3 py-2`}>
-              {estado}
-            </span>
+          {/* Botones */}
+          <div className="d-flex justify-content-center gap-2 flex-wrap">
 
-            <div>
+            <button
+              className="btn btn-outline-success btn-sm rounded-pill px-3"
+              onClick={cambiarEstado}
+            >
+              <i className="fas fa-sync-alt me-1"></i>
+              Estado
+            </button>
 
-              <button
-                className="btn btn-warning btn-sm me-2 fw-semibold"
-                onClick={onEditar}
-              >
-                Editar
-              </button>
+            <button
+              className="btn btn-outline-warning btn-sm rounded-pill px-3"
+              onClick={onEditar}
+            >
+              <i className="fas fa-edit me-1"></i>
+              Editar
+            </button>
 
-              <button
-                className="btn btn-danger btn-sm fw-semibold"
-                onClick={onEliminar}
-              >
-                Eliminar
-              </button>
-
-            </div>
+            <button
+              className="btn btn-outline-danger btn-sm rounded-pill px-3"
+              onClick={onEliminar}
+            >
+              <i className="fas fa-trash me-1"></i>
+              Eliminar
+            </button>
 
           </div>
 
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AlumnoCard
+export default AlumnoCard;

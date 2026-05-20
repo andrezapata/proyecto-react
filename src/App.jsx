@@ -1,240 +1,52 @@
-// src/App.jsx
-
-import { useState } from "react"
-import Navbar from "./components/Navbar"
-import AlumnoCard from "./components/AlumnoCard"
-
+import { useState, useEffect } from 'react';
+import Navbar from './components/Navbar';
+import AlumnoCard from './components/AlumnoCard';
+import AlumnoForm from './components/AlumnoForm';
 function App() {
-
-  const [seccion, setSeccion] = useState("inicio")
-
-  const [alumnos, setAlumnos] = useState([
-    {
-      id: 1,
-      nombre: "Andre Zapata",
-      carrera: "Informatica y Desarrollo de Aplicaciones Web",
-      estado: "Matriculado"
-    },
-
-    {
-      id: 2,
-      nombre: "Tiffa Rosales",
-      carrera: "Medicina",
-      estado: "Inactivo"
-    },
-
-    {
-      id: 3,
-      nombre: "Carlos Ramirez",
-      carrera: "Ingeniería de Software",
-      estado: "Matriculado"
-    },
-
-    {
-      id: 4,
-      nombre: "Lucia Fernandez",
-      carrera: "Administración Industrial",
-      estado: "Matriculado"
-    },
-
-    {
-      id: 5,
-      nombre: "Kevin Torres",
-      carrera: "Diseño Gráfico",
-      estado: "Inactivo"
-    },
-
-    {
-      id: 6,
-      nombre: "Maria Lopez",
-      carrera: "Contabilidad",
-      estado: "Matriculado"
-    },
-
-    {
-      id: 7,
-      nombre: "Jorge Castillo",
-      carrera: "Ciberseguridad",
-      estado: "Matriculado"
-    },
-
-    {
-      id: 8,
-      nombre: "Valeria Rojas",
-      carrera: "Arquitectura de Plataformas",
-      estado: "Inactivo"
-    }
-  ])
-
-  const eliminarAlumno = (id) => {
-    const nuevosAlumnos = alumnos.filter(
-      (alumno) => alumno.id !== id
-    )
-
-    setAlumnos(nuevosAlumnos)
-  }
-
-  const editarAlumno = (id) => {
-
-    const nuevoNombre = prompt("Ingrese el nuevo nombre")
-
-    if (!nuevoNombre) return
-
-    const actualizar = alumnos.map((alumno) => {
-
-      if (alumno.id === id) {
-        return {
-          ...alumno,
-          nombre: nuevoNombre
-        }
-      }
-
-      return alumno
-    })
-
-    setAlumnos(actualizar)
-  }
-
-  return (
-    <>
-      <Navbar cambiarSeccion={setSeccion} />
-
-      <div className="container py-5">
-
-        {/* INICIO */}
-        {seccion === "inicio" && (
-          <>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-
-              <div>
-                <h1 className="fw-bold">
-                  Sistema de Matrícula
-                </h1>
-
-                <p className="text-muted">
-                  Gestión académica de estudiantes
-                </p>
-              </div>
-
-              <button className="btn btn-primary fw-semibold">
-                + Nuevo Alumno
-              </button>
-
-            </div>
-
-            <div className="row">
-
-              {alumnos.map((alumno) => (
-
-                <AlumnoCard
-                  key={alumno.id}
-                  nombre={alumno.nombre}
-                  carrera={alumno.carrera}
-                  estado={alumno.estado}
-                  onEliminar={() => eliminarAlumno(alumno.id)}
-                  onEditar={() => editarAlumno(alumno.id)}
-                />
-
-              ))}
-
-            </div>
-          </>
-        )}
-
-        {/* CURSOS */}
-        {seccion === "cursos" && (
-          <div className="card shadow border-0 rounded-4 p-4">
-
-            <h2 className="fw-bold text-primary mb-4">
-              Cursos Disponibles
-            </h2>
-
-            <ul className="list-group">
-
-              <li className="list-group-item">
-                Desarrollo Web
-              </li>
-
-              <li className="list-group-item">
-                Base de Datos
-              </li>
-
-              <li className="list-group-item">
-                React JS
-              </li>
-
-              <li className="list-group-item">
-                Laravel
-              </li>
-
-            </ul>
-          </div>
-        )}
-
-        {/* ESPECIALIZACIONES */}
-        {seccion === "especializaciones" && (
-          <div className="card shadow border-0 rounded-4 p-4">
-
-            <h2 className="fw-bold text-success mb-4">
-              Especializaciones
-            </h2>
-
-            <div className="row">
-
-              <div className="col-md-4">
-                <div className="card border-success mb-3">
-                  <div className="card-body">
-                    <h5>Ciberseguridad</h5>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-md-4">
-                <div className="card border-success mb-3">
-                  <div className="card-body">
-                    <h5>Inteligencia Artificial</h5>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-md-4">
-                <div className="card border-success mb-3">
-                  <div className="card-body">
-                    <h5>Cloud Computing</h5>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* CONTACTOS */}
-        {seccion === "contactos" && (
-          <div className="card shadow border-0 rounded-4 p-4">
-
-            <h2 className="fw-bold text-danger mb-4">
-              Contactos
-            </h2>
-
-            <p>
-              📞 Teléfono: 987654321
-            </p>
-
-            <p>
-              📧 Email: matricula@senati.pe
-            </p>
-
-            <p>
-              📍 Dirección: SENATI - Lima
-            </p>
-
-          </div>
-        )}
-
-      </div>
-    </>
-  )
+// 1. Iniciamos el estado como un arreglo vacío (esperando los datos del servidor)
+const [alumnos, setAlumnos] = useState([]);
+// 2. Función para obtener los alumnos desde la API de Laravel
+const obtenerAlumnos = async () => {
+try {
+const respuesta = await fetch('http://127.0.0.1:8000/api/alumnos');
+const datos = await respuesta.json();
+// Asumimos que Laravel devuelve un objeto con la llave 'data' o directamente el arreglo
+setAlumnos(datos.data || datos);
+} catch (error) {
+console.error('Error al obtener los alumnos:', error);
 }
+};
+// 3. El hook useEffect ejecuta obtenerAlumnos() automáticamente la primera vez que la página carga
+useEffect(() => {
+obtenerAlumnos();
 
-export default App
+}, []); // El arreglo vacío [] significa "ejecutar solo una vez al montar el componente"
+return (
+<>
+<Navbar />
+<div className="container">
+<h2 className="mb-4">Directorio de Alumnos</h2>
+{/* Pasamos la función obtenerAlumnos al formulario para que
+pueda recargar la tabla al guardar */}
+<AlumnoForm recargarAlumnos={obtenerAlumnos} />
+<div className="row mt-4">
+{alumnos.map((alumno) => (
+<AlumnoCard
+key={alumno.id_alumno} // Usamos la llave primaria de la
+
+base de datos
+
+nombre={`${alumno.nombre} ${alumno.apellidos}`}
+carrera={alumno.email} // Temporal: Mostramos el email ya
+
+que aún no cruzamos tablas
+
+estadoInicial={alumno.estado_matricula}
+/>
+))}
+</div>
+</div>
+</>
+);
+}
+export default App;
